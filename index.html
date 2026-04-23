@@ -9,7 +9,7 @@
             text-align: center;
             color: white;
 
-            background-image: url("https://tse3.mm.bing.net/th/id/OIP.YI58-tuZk2CwLxkPeXHt4wHaQC?w=115&h=180&c=7&r=0&o=7&pid=1.7&rm=3");
+            background-image: url("https://delivery.pixelbin.io/predictions/outputs/1d/sr/upscaleRestricted/019dba87-3e0f-7eef-947f-85a003ed6f39/result_0.webp");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -66,6 +66,7 @@
             display: none;
             font-size: 20px;
             margin-top: 20px;
+            font-weight: bold;
         }
 
         #boostBtn {
@@ -73,9 +74,9 @@
             top: 10px;
             right: 10px;
             z-index: 999;
+            display: none;
         }
 
-        /* FPS TEXT */
         #fpsText {
             margin-top: 15px;
             font-size: 16px;
@@ -115,7 +116,6 @@
     <button onclick="cek()">Cek Sekarang</button>
     <button onclick="bukaTutorial()">📘 Cara Cek CPU/GPU</button>
 
-    <!-- INI TOMBOL TEKS BARU -->
     <div id="fpsText">
     💻🖥 chek fps game di pc kamu 🖥💻
     </div>
@@ -138,20 +138,35 @@
 </div>
 
 <script>
-let baseTime = 10000;
+let baseTime = 3000;
 let reduce = 0;
 let clickCount = 0;
 
 function showLoading() {
     document.getElementById("loading").style.display = "block";
+    document.getElementById("boostBtn").style.display = "block";
 }
 
 function hideLoading() {
     document.getElementById("loading").style.display = "none";
+    document.getElementById("boostBtn").style.display = "none";
+    document.getElementById("loading").innerHTML = "⏳ Loading... tunggu bentar";
+    reduce = 0;
+    clickCount = 0;
+}
+
+function updateLoading(sec) {
+    if (sec === 3) {
+        document.getElementById("loading").innerHTML = "⚙️ memproses sistem... (3)";
+    } else if (sec === 2) {
+        document.getElementById("loading").innerHTML = "🔧 optimasi data... (2)";
+    } else if (sec === 1) {
+        document.getElementById("loading").innerHTML = "⚡ hampir selesai... (1)";
+    }
 }
 
 function boost() {
-    if (reduce < 9000) {
+    if (reduce < 2000) {
         reduce += 1000;
         clickCount++;
     }
@@ -159,11 +174,11 @@ function boost() {
     let btn = document.getElementById("boostBtn");
 
     if (clickCount === 1) btn.innerText = "percepat (1 detik)";
-    else if (clickCount === 2) btn.innerText = "2 (detik nih percepatnya)";
+    else if (clickCount === 2) btn.innerText = "2 detik boost";
     else if (clickCount === 3) btn.innerText = "woi udah woi";
     else if (clickCount === 4) btn.innerText = "bang udah bang";
     else if (clickCount === 5) btn.innerText = "ampun bangg";
-    else if (clickCount === 6) btn.innerText = "udah bang ngelek pc ku";
+    else if (clickCount === 6) btn.innerText = "udah bang 😭";
     else if (clickCount === 7) btn.innerText = "pasrah";
     else if (clickCount === 8) btn.innerText = "💀DEATH💀";
     else if (clickCount === 9) btn.innerText = "⚰ dikubur ⚰";
@@ -197,6 +212,15 @@ function cek() {
 
     let delay = baseTime - reduce;
 
+    let sec = 3;
+    updateLoading(sec);
+
+    let interval = setInterval(() => {
+        sec--;
+        if (sec > 0) updateLoading(sec);
+        else clearInterval(interval);
+    }, 1000);
+
     setTimeout(() => {
 
         let cpu = document.getElementById("cpu").value.toLowerCase();
@@ -223,6 +247,7 @@ function cek() {
         else hasil += "⚠️ PC berat";
 
         document.getElementById("hasil").innerHTML = hasil;
+
         hideLoading();
 
     }, delay);
