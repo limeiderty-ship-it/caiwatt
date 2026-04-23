@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>cai.watt</title>
+    <style>
+        body {
+            font-family: Arial;
+            text-align: center;
+            color: white;
+
+            /* BACKGROUND GIF */
+            background: url("https://cdn.wallpapersafari.com/89/2/Qs8le2.gif");
+            background-size: cover;
+            background-position: center;
+        }
+
+        /* efek gelap biar tulisan jelas */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: -1;
+        }
+
+        .page {
+            display: none;
+            padding: 20px;
+        }
+
+        .active {
+            display: block;
+        }
+
+        input {
+            padding: 10px;
+            margin: 10px;
+            width: 250px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        button {
+            padding: 10px 20px;
+            border-radius: 10px;
+            border: none;
+            background: #38bdf8;
+            color: black;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        #hasil {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #loading {
+            display: none;
+            font-size: 20px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div id="home" class="page active">
+    <h2>⚡ cai.watt</h2>
+
+    <input id="cpu" placeholder="Contoh: i5 / ryzen 5"><br>
+    <input id="gpu" placeholder="Contoh: gtx 1650 / rtx 3060"><br>
+
+    <button onclick="cek()">Cek Sekarang</button><br>
+    <button onclick="bukaTutorial()">📘 Cara Cek CPU/GPU</button>
+
+    <div id="loading">⏳ Loading... tunggu bentar</div>
+
+    <p id="hasil"></p>
+</div>
+
+<div id="tutorial" class="page">
+    <h2>📘 Tutorial Cek CPU & GPU</h2>
+
+    <p>1. Tekan Windows + R</p>
+    <p>2. Ketik dxdiag</p>
+    <p>3. Lihat Processor = CPU</p>
+    <p>4. Tab Display = GPU</p>
+
+    <br>
+    <button onclick="kembali()">⬅️ Kembali</button>
+</div>
+
+<script>
+function showLoading() {
+    document.getElementById("loading").style.display = "block";
+}
+
+function hideLoading() {
+    document.getElementById("loading").style.display = "none";
+}
+
+function bukaTutorial() {
+    showLoading();
+    setTimeout(() => {
+        document.getElementById("home").classList.remove("active");
+        document.getElementById("tutorial").classList.add("active");
+        hideLoading();
+    }, 1000);
+}
+
+function kembali() {
+    document.getElementById("tutorial").classList.remove("active");
+    document.getElementById("home").classList.add("active");
+}
+
+function cek() {
+    showLoading();
+
+    setTimeout(() => {
+        let cpu = document.getElementById("cpu").value.toLowerCase();
+        let gpu = document.getElementById("gpu").value.toLowerCase();
+
+        let cpu_power = 65;
+        if (cpu.includes("i5")) cpu_power = 95;
+        else if (cpu.includes("i7")) cpu_power = 125;
+
+        let gpu_power = 80;
+        if (gpu.includes("gtx 1650")) gpu_power = 85;
+        else if (gpu.includes("rtx 3060")) gpu_power = 180;
+
+        let total = cpu_power + gpu_power + 70;
+
+        let hasil = "⚡ Estimasi Watt PC: " + total + " W<br>";
+
+        if (total < 200) {
+            hasil += "💡 PC ringan";
+        } else if (total < 400) {
+            hasil += "🔥 PC gaming";
+        } else {
+            hasil += "⚠️ PC berat";
+        }
+
+        document.getElementById("hasil").innerHTML = hasil;
+        hideLoading();
+    }, 1200);
+}
+</script>
+
+</body>
+</html>
