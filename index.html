@@ -13,8 +13,6 @@
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-
-            animation: bgZoom 12s infinite ease-in-out;
         }
 
         body::before {
@@ -28,35 +26,18 @@
             z-index: -1;
         }
 
-        @keyframes bgZoom {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-
-        @keyframes floatTitle {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-6px); }
-            100% { transform: translateY(0px); }
-        }
-
-        @keyframes blink {
-            0% { opacity: 1; }
-            50% { opacity: 0.4; }
-            100% { opacity: 1; }
-        }
-
-        .page {
-            display: none;
-            padding: 20px;
-        }
-
-        .active {
-            display: block;
-        }
+        /* PAGE */
+        .page { display: none; padding: 20px; }
+        .active { display: block; }
 
         h2 {
-            animation: floatTitle 2s infinite ease-in-out;
+            animation: float 2s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0); }
         }
 
         input, select {
@@ -66,8 +47,7 @@
             border-radius: 10px;
             border: none;
             background: #b0b0b0;
-            color: black;
-            font-family: "Times New Roman", serif;
+            font-family: "Times New Roman";
         }
 
         button {
@@ -78,45 +58,80 @@
             color: #222;
             font-weight: bold;
             cursor: pointer;
-            margin: 5px;
-            transition: 0.2s;
-        }
-
-        button:hover {
-            transform: scale(1.05);
-        }
-
-        #hasil {
-            margin-top: 20px;
-            font-size: 18px;
         }
 
         #loading {
             display: none;
-            font-size: 20px;
-            margin-top: 20px;
-            font-weight: bold;
-            animation: blink 1s infinite;
         }
 
         #boostBtn {
             position: fixed;
             top: 10px;
             right: 10px;
-            z-index: 999;
             display: none;
         }
 
-        #fpsText {
-            margin-top: 15px;
-            font-size: 16px;
-            opacity: 0.9;
-            animation: blink 2s infinite;
+        /* WATERMARK */
+        #watermark {
+            position: fixed;
+            bottom: 10px;
+            left: 10px;
+            font-size: 12px;
+        }
+
+        .verified {
+            color: #00bfff;
+        }
+
+        /* RUNAWAY BUTTON */
+        #fakeClose {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: 1px solid white;
+            border-radius: 6px;
+            cursor: pointer;
+            z-index: 9999;
+        }
+
+        #fakeClose::after {
+            content: "✖";
+            color: white;
+            font-size: 18px;
+            position: absolute;
+            top: 7px;
+            left: 11px;
+        }
+
+        /* PRANK TEXT */
+        #prankText {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            font-size: 30px;
+            font-weight: bold;
+            text-shadow: 0 0 10px black;
+        }
+
+        #prankText.show {
+            animation: pop 0.4s ease forwards;
+        }
+
+        @keyframes pop {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
         }
     </style>
 </head>
 
 <body>
+
+<div id="fakeClose"></div>
+<div id="prankText"></div>
 
 <button id="boostBtn" onclick="boost()">percepat proses</button>
 
@@ -124,155 +139,107 @@
     <h2>⚡ cai.watt</h2>
 
     <select id="cpuSelect" onchange="syncCPU()">
-        <option value="">Pilih CPU</option>
-        <option value="i5">Intel i5</option>
-        <option value="i7">Intel i7</option>
-        <option value="ryzen 5">Ryzen 5</option>
-        <option value="ryzen 7">Ryzen 7</option>
+        <option value="">CPU</option>
+        <option value="i5">i5</option>
+        <option value="i7">i7</option>
+        <option value="ryzen 5">ryzen 5</option>
+        <option value="ryzen 7">ryzen 7</option>
     </select>
 
-    <input id="cpu" placeholder="atau ketik CPU manual"><br>
+    <input id="cpu" placeholder="manual cpu"><br>
 
     <select id="gpuSelect" onchange="syncGPU()">
-        <option value="">Pilih GPU</option>
-        <option value="gtx 1650">GTX 1650</option>
-        <option value="gtx 1660">GTX 1660</option>
-        <option value="rtx 3060">RTX 3060</option>
-        <option value="rtx 4060">RTX 4060</option>
+        <option value="">GPU</option>
+        <option value="gtx 1650">gtx 1650</option>
+        <option value="rtx 3060">rtx 3060</option>
     </select>
 
-    <input id="gpu" placeholder="atau ketik GPU manual"><br>
+    <input id="gpu" placeholder="manual gpu"><br>
 
     <button onclick="cek()">Cek Sekarang</button>
-    <button onclick="bukaTutorial()">📘 Cara Cek CPU/GPU</button>
+    <button onclick="bukaTutorial()">Tutorial</button>
 
-    <div id="fpsText">
-    💻🖥 chek fps game di pc kamu 🖥💻
-    </div>
-
-    <div id="loading">⏳ Loading... tunggu bentar</div>
-
+    <div id="loading">Loading...</div>
     <p id="hasil"></p>
 </div>
 
 <div id="tutorial" class="page">
-    <h2>📘 Tutorial Cek CPU & GPU</h2>
+    <h2>Tutorial</h2>
+    <p>Windows + R → dxdiag</p>
+    <button onclick="kembali()">Back</button>
+</div>
 
-    <p>1. Tekan Windows + R</p>
-    <p>2. Ketik dxdiag</p>
-    <p>3. Lihat Processor = CPU</p>
-    <p>4. Tab Display = GPU</p>
-
-    <br>
-    <button onclick="kembali()">⬅️ Kembali</button>
+<!-- WATERMARK -->
+<div id="watermark">
+    this web by zuhair (Belajar Ai)
+    <span class="verified">✔ Ai ini berbayar</span>
 </div>
 
 <script>
 let baseTime = 3000;
 let reduce = 0;
-let clickCount = 0;
+let click = 0;
 
-function showLoading() {
+/* BOOST */
+function boost(){
+    if(reduce < 2000) reduce += 1000;
+    document.getElementById("boostBtn").innerText = "boosted";
+}
+
+/* CPU GPU SYNC */
+function syncCPU(){
+    cpu.value = cpuSelect.value;
+}
+function syncGPU(){
+    gpu.value = gpuSelect.value;
+}
+
+/* CHECK */
+function cek(){
     document.getElementById("loading").style.display = "block";
-    document.getElementById("boostBtn").style.display = "block";
+
+    setTimeout(()=>{
+        document.getElementById("hasil").innerText = "OK PC TERDETEKSI";
+        document.getElementById("loading").style.display = "none";
+    }, baseTime - reduce);
 }
 
-function hideLoading() {
-    document.getElementById("loading").style.display = "none";
-    document.getElementById("boostBtn").style.display = "none";
-    document.getElementById("loading").innerHTML = "⏳ Loading... tunggu bentar";
-    reduce = 0;
-    clickCount = 0;
+/* NAV */
+function bukaTutorial(){
+    home.classList.remove("active");
+    tutorial.classList.add("active");
+}
+function kembali(){
+    tutorial.classList.remove("active");
+    home.classList.add("active");
 }
 
-function boost() {
-    if (reduce < 2000) {
-        reduce += 1000;
-        clickCount++;
+/* RUNAWAY BUTTON */
+const btn = document.getElementById("fakeClose");
+const text = document.getElementById("prankText");
+
+btn.addEventListener("mouseover", ()=>{
+    let x = Math.random()*(window.innerWidth-60);
+    let y = Math.random()*(window.innerHeight-60);
+    btn.style.left = x+"px";
+    btn.style.top = y+"px";
+    btn.style.right = "auto";
+});
+
+btn.addEventListener("click", ()=>{
+    click++;
+
+    if(click===1) text.innerText="eitsss tidak kenaa";
+    else if(click===2) text.innerText="yaudah nih terakhir";
+    else {
+        text.innerText="WEB CLOSED 💀";
+        setTimeout(()=>document.body.innerHTML="<h1 style='color:white'>CLOSED</h1>",1000);
     }
 
-    let btn = document.getElementById("boostBtn");
-
-    if (clickCount === 1) btn.innerText = "percepat (1 detik)";
-    else if (clickCount === 2) btn.innerText = "2 detik boost";
-    else if (clickCount === 3) btn.innerText = "woi udah woi";
-    else if (clickCount === 4) btn.innerText = "bang udah bang";
-    else if (clickCount === 5) btn.innerText = "ampun bangg";
-    else if (clickCount === 6) btn.innerText = "udah bang 😭";
-    else if (clickCount === 7) btn.innerText = "pasrah";
-    else if (clickCount === 8) btn.innerText = "💀DEATH💀";
-    else if (clickCount === 9) btn.innerText = "⚰ dikubur ⚰";
-    else btn.innerText = "🪦";
-}
-
-function bukaTutorial() {
-    showLoading();
-    setTimeout(() => {
-        document.getElementById("home").classList.remove("active");
-        document.getElementById("tutorial").classList.add("active");
-        hideLoading();
-    }, 800);
-}
-
-function kembali() {
-    document.getElementById("tutorial").classList.remove("active");
-    document.getElementById("home").classList.add("active");
-}
-
-function syncCPU() {
-    document.getElementById("cpu").value = document.getElementById("cpuSelect").value;
-}
-
-function syncGPU() {
-    document.getElementById("gpu").value = document.getElementById("gpuSelect").value;
-}
-
-function cek() {
-    showLoading();
-
-    let delay = baseTime - reduce;
-
-    let sec = 3;
-    document.getElementById("loading").innerHTML = "⚙️ memproses sistem... (3)";
-
-    let interval = setInterval(() => {
-        sec--;
-        if (sec === 2) document.getElementById("loading").innerHTML = "🔧 optimasi data... (2)";
-        if (sec === 1) document.getElementById("loading").innerHTML = "⚡ hampir selesai... (1)";
-        if (sec <= 0) clearInterval(interval);
-    }, 1000);
-
-    setTimeout(() => {
-
-        let cpu = document.getElementById("cpu").value.toLowerCase();
-        let gpu = document.getElementById("gpu").value.toLowerCase();
-
-        let cpu_power = 65;
-        if (cpu.includes("i5")) cpu_power = 95;
-        else if (cpu.includes("i7")) cpu_power = 125;
-        else if (cpu.includes("ryzen 5")) cpu_power = 100;
-        else if (cpu.includes("ryzen 7")) cpu_power = 135;
-
-        let gpu_power = 80;
-        if (gpu.includes("gtx 1650")) gpu_power = 85;
-        else if (gpu.includes("gtx 1660")) gpu_power = 110;
-        else if (gpu.includes("rtx 3060")) gpu_power = 180;
-        else if (gpu.includes("rtx 4060")) gpu_power = 220;
-
-        let total = cpu_power + gpu_power + 70;
-
-        let hasil = "⚡ Estimasi Watt PC: " + total + " W<br>";
-
-        if (total < 200) hasil += "💡 PC ringan";
-        else if (total < 400) hasil += "🔥 PC gaming";
-        else hasil += "⚠️ PC berat";
-
-        document.getElementById("hasil").innerHTML = hasil;
-
-        hideLoading();
-
-    }, delay);
-}
+    text.classList.remove("show");
+    void text.offsetWidth;
+    text.classList.add("show");
+});
 </script>
 
 </body>
