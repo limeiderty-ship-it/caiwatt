@@ -9,10 +9,12 @@
             text-align: center;
             color: white;
 
-            background-image: url("dfbf2dd0-0a9f-4433-bd6b-0e214d4d965c.jfif");
+            background-image: url("dfbf2dd0-0a9f-4433-bd6b-0e214d4d965c.jpg");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
+
+            animation: bgZoom 12s infinite ease-in-out;
         }
 
         body::before {
@@ -26,6 +28,24 @@
             z-index: -1;
         }
 
+        @keyframes bgZoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes floatTitle {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-6px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes blink {
+            0% { opacity: 1; }
+            50% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
         .page {
             display: none;
             padding: 20px;
@@ -33,6 +53,10 @@
 
         .active {
             display: block;
+        }
+
+        h2 {
+            animation: floatTitle 2s infinite ease-in-out;
         }
 
         input, select {
@@ -55,6 +79,11 @@
             font-weight: bold;
             cursor: pointer;
             margin: 5px;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            transform: scale(1.05);
         }
 
         #hasil {
@@ -67,6 +96,7 @@
             font-size: 20px;
             margin-top: 20px;
             font-weight: bold;
+            animation: blink 1s infinite;
         }
 
         #boostBtn {
@@ -80,8 +110,8 @@
         #fpsText {
             margin-top: 15px;
             font-size: 16px;
-            color: white;
             opacity: 0.9;
+            animation: blink 2s infinite;
         }
     </style>
 </head>
@@ -155,16 +185,6 @@ function hideLoading() {
     clickCount = 0;
 }
 
-function updateLoading(sec) {
-    if (sec === 3) {
-        document.getElementById("loading").innerHTML = "⚙️ memproses sistem... (3)";
-    } else if (sec === 2) {
-        document.getElementById("loading").innerHTML = "🔧 optimasi data... (2)";
-    } else if (sec === 1) {
-        document.getElementById("loading").innerHTML = "⚡ hampir selesai... (1)";
-    }
-}
-
 function boost() {
     if (reduce < 2000) {
         reduce += 1000;
@@ -213,12 +233,13 @@ function cek() {
     let delay = baseTime - reduce;
 
     let sec = 3;
-    updateLoading(sec);
+    document.getElementById("loading").innerHTML = "⚙️ memproses sistem... (3)";
 
     let interval = setInterval(() => {
         sec--;
-        if (sec > 0) updateLoading(sec);
-        else clearInterval(interval);
+        if (sec === 2) document.getElementById("loading").innerHTML = "🔧 optimasi data... (2)";
+        if (sec === 1) document.getElementById("loading").innerHTML = "⚡ hampir selesai... (1)";
+        if (sec <= 0) clearInterval(interval);
     }, 1000);
 
     setTimeout(() => {
