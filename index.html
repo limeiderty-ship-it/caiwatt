@@ -2,19 +2,19 @@
 <html>
 <head>
     <title>cai.watt</title>
+
     <style>
         body {
-            font-family: Arial;
+            font-family: "Times New Roman", serif;
             text-align: center;
             color: white;
 
-            /* BACKGROUND GIF */
-            background: url("https://cdn.wallpapersafari.com/89/2/Qs8le2.gif");
+            background-image: url("https://tse3.mm.bing.net/th/id/OIP.YI58-tuZk2CwLxkPeXHt4wHaQC?w=115&h=180&c=7&r=0&o=7&pid=1.7&rm=3");
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
         }
 
-        /* efek gelap biar tulisan jelas */
         body::before {
             content: "";
             position: fixed;
@@ -35,20 +35,23 @@
             display: block;
         }
 
-        input {
+        input, select {
             padding: 10px;
             margin: 10px;
-            width: 250px;
+            width: 260px;
             border-radius: 10px;
             border: none;
+            background: #b0b0b0;
+            color: black;
+            font-family: "Times New Roman", serif;
         }
 
         button {
             padding: 10px 20px;
             border-radius: 10px;
             border: none;
-            background: #38bdf8;
-            color: black;
+            background: #f5f5f5;
+            color: #222;
             font-weight: bold;
             cursor: pointer;
             margin: 5px;
@@ -64,18 +67,58 @@
             font-size: 20px;
             margin-top: 20px;
         }
+
+        #boostBtn {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 999;
+        }
+
+        /* FPS TEXT */
+        #fpsText {
+            margin-top: 15px;
+            font-size: 16px;
+            color: white;
+            opacity: 0.9;
+        }
     </style>
 </head>
+
 <body>
+
+<button id="boostBtn" onclick="boost()">percepat proses</button>
 
 <div id="home" class="page active">
     <h2>⚡ cai.watt</h2>
 
-    <input id="cpu" placeholder="Contoh: i5 / ryzen 5"><br>
-    <input id="gpu" placeholder="Contoh: gtx 1650 / rtx 3060"><br>
+    <select id="cpuSelect" onchange="syncCPU()">
+        <option value="">Pilih CPU</option>
+        <option value="i5">Intel i5</option>
+        <option value="i7">Intel i7</option>
+        <option value="ryzen 5">Ryzen 5</option>
+        <option value="ryzen 7">Ryzen 7</option>
+    </select>
 
-    <button onclick="cek()">Cek Sekarang</button><br>
+    <input id="cpu" placeholder="atau ketik CPU manual"><br>
+
+    <select id="gpuSelect" onchange="syncGPU()">
+        <option value="">Pilih GPU</option>
+        <option value="gtx 1650">GTX 1650</option>
+        <option value="gtx 1660">GTX 1660</option>
+        <option value="rtx 3060">RTX 3060</option>
+        <option value="rtx 4060">RTX 4060</option>
+    </select>
+
+    <input id="gpu" placeholder="atau ketik GPU manual"><br>
+
+    <button onclick="cek()">Cek Sekarang</button>
     <button onclick="bukaTutorial()">📘 Cara Cek CPU/GPU</button>
+
+    <!-- INI TOMBOL TEKS BARU -->
+    <div id="fpsText">
+    💻🖥 chek fps game di pc kamu 🖥💻
+    </div>
 
     <div id="loading">⏳ Loading... tunggu bentar</div>
 
@@ -95,6 +138,10 @@
 </div>
 
 <script>
+let baseTime = 10000;
+let reduce = 0;
+let clickCount = 0;
+
 function showLoading() {
     document.getElementById("loading").style.display = "block";
 }
@@ -103,13 +150,33 @@ function hideLoading() {
     document.getElementById("loading").style.display = "none";
 }
 
+function boost() {
+    if (reduce < 9000) {
+        reduce += 1000;
+        clickCount++;
+    }
+
+    let btn = document.getElementById("boostBtn");
+
+    if (clickCount === 1) btn.innerText = "percepat (1 detik)";
+    else if (clickCount === 2) btn.innerText = "2 (detik nih percepatnya)";
+    else if (clickCount === 3) btn.innerText = "woi udah woi";
+    else if (clickCount === 4) btn.innerText = "bang udah bang";
+    else if (clickCount === 5) btn.innerText = "ampun bangg";
+    else if (clickCount === 6) btn.innerText = "udah bang ngelek pc ku";
+    else if (clickCount === 7) btn.innerText = "pasrah";
+    else if (clickCount === 8) btn.innerText = "💀DEATH💀";
+    else if (clickCount === 9) btn.innerText = "⚰ dikubur ⚰";
+    else btn.innerText = "🪦";
+}
+
 function bukaTutorial() {
     showLoading();
     setTimeout(() => {
         document.getElementById("home").classList.remove("active");
         document.getElementById("tutorial").classList.add("active");
         hideLoading();
-    }, 1000);
+    }, 800);
 }
 
 function kembali() {
@@ -117,36 +184,48 @@ function kembali() {
     document.getElementById("home").classList.add("active");
 }
 
+function syncCPU() {
+    document.getElementById("cpu").value = document.getElementById("cpuSelect").value;
+}
+
+function syncGPU() {
+    document.getElementById("gpu").value = document.getElementById("gpuSelect").value;
+}
+
 function cek() {
     showLoading();
 
+    let delay = baseTime - reduce;
+
     setTimeout(() => {
+
         let cpu = document.getElementById("cpu").value.toLowerCase();
         let gpu = document.getElementById("gpu").value.toLowerCase();
 
         let cpu_power = 65;
         if (cpu.includes("i5")) cpu_power = 95;
         else if (cpu.includes("i7")) cpu_power = 125;
+        else if (cpu.includes("ryzen 5")) cpu_power = 100;
+        else if (cpu.includes("ryzen 7")) cpu_power = 135;
 
         let gpu_power = 80;
         if (gpu.includes("gtx 1650")) gpu_power = 85;
+        else if (gpu.includes("gtx 1660")) gpu_power = 110;
         else if (gpu.includes("rtx 3060")) gpu_power = 180;
+        else if (gpu.includes("rtx 4060")) gpu_power = 220;
 
         let total = cpu_power + gpu_power + 70;
 
         let hasil = "⚡ Estimasi Watt PC: " + total + " W<br>";
 
-        if (total < 200) {
-            hasil += "💡 PC ringan";
-        } else if (total < 400) {
-            hasil += "🔥 PC gaming";
-        } else {
-            hasil += "⚠️ PC berat";
-        }
+        if (total < 200) hasil += "💡 PC ringan";
+        else if (total < 400) hasil += "🔥 PC gaming";
+        else hasil += "⚠️ PC berat";
 
         document.getElementById("hasil").innerHTML = hasil;
         hideLoading();
-    }, 1200);
+
+    }, delay);
 }
 </script>
 
